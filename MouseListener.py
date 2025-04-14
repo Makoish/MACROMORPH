@@ -4,17 +4,20 @@ from LeftMousePress import LeftMousePress
 from RightMousePress import RightMousePress
 from LeftMouseRelease import LeftMouseRelease
 from RightMouseRelease import RightMouseRelease
+from KeyboardPress import KeyboardPress
+from KeyboardRelease import KeyboardRelease
 import threading
 from Delay import Delay
 from MouseMove import MouseMove
 from ControllerSingleton import ControllerSingleton
+from KeyboardControllerSingleton import KeyboardControllerSingleton
 import ctypes
 from datetime import datetime
 from pynput.keyboard import Listener as KeyboardListener, Key
 PROCESS_PER_MONITOR_DPI_AWARE=2
 ctypes.windll.shcore.SetProcessDpiAwareness(PROCESS_PER_MONITOR_DPI_AWARE)
 
-class MouseHandler:
+class eventListener:
     def __init__(self):
 
         self.listAction = ListAction()
@@ -54,6 +57,13 @@ class MouseHandler:
             self.listener.stop()
             self.keyboard_listener.stop()
             return False  # This stops the keyboard listener
+        self.listAction.append(KeyboardPress(key))
+        
+        
+    
+
+    def on_release(key):
+        self.listAction.append(KeyboardRelease(key))
 
 
     
@@ -76,5 +86,5 @@ class MouseHandler:
 
 # Usage
 if __name__ == "__main__":
-    mouse_handler = MouseHandler()
-    mouse_handler.start()
+    _eventListener = eventListener()
+    _eventListener.start()

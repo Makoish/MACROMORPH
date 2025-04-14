@@ -8,3 +8,6 @@ class Delay(Action):
 
     def Perform(self):
         time.sleep(self._time.total_seconds())
+
+    def __str__(self):
+        return f"Delay {self._time.total_seconds()}"
