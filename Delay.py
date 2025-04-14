@@ -7,4 +7,4 @@ class Delay(Action):
         self._time = _time
 
     def Perform(self):
-        time.sleep(self._time)
+        time.sleep(self._time.total_seconds())
