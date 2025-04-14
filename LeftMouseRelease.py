@@ -1,11 +1,11 @@
 from Action import Action
 from pynput.mouse import Button
 from Mouse import Mouse
-from MouseControllerSingleton import MouseControllerSingleton
+from ControllerSingleton import ControllerSingleton
 
 class LeftMouseRelease(Action, Mouse):
     def __init__(self):
-        self.mouse = MouseControllerSingleton().get_controller()
+        self.mouse = ControllerSingleton().get_controller()
 
     def Perform(self):
         self.mouse.release(Button.left)
