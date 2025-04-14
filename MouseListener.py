@@ -57,12 +57,19 @@ class eventListener:
             self.listener.stop()
             self.keyboard_listener.stop()
             return False  # This stops the keyboard listener
+
+        last_start_time = self.listAction.tail.data.start_time
+        _delay = datetime.now() - last_start_time
+        self.listAction.append(Delay(_delay))
         self.listAction.append(KeyboardPress(key))
         
         
     
 
     def on_release(key):
+        last_start_time = self.listAction.tail.data.start_time
+        _delay = datetime.now() - last_start_time
+        self.listAction.append(Delay(_delay))
         self.listAction.append(KeyboardRelease(key))
 
 
