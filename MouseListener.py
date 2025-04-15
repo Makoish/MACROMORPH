@@ -10,7 +10,7 @@ import threading
 from Delay import Delay
 from MouseMove import MouseMove
 from ControllerSingleton import ControllerSingleton
-from KeyboardControllerSingleton import KeyboardControllerSingleton
+from MouseScroll import MouseScroll
 import ctypes
 from datetime import datetime
 from pynput.keyboard import Listener as KeyboardListener, Key
@@ -31,15 +31,16 @@ class eventListener:
         )
 
         self.keyboard_listener = KeyboardListener(
-            on_press=self.on_key_press
+            on_press=self.on_key_press,
+            on_release=self.on_release
         )
         self.keyboard_listener.start()
 
     def on_click(self, x, y, button, pressed):
-
-
+       
         if pressed:
             if button == Button.left:
+                print("asdadasdad")
                 self.listAction.append(LeftMousePress())
             if button == Button.right:
                 self.listAction.append(RightMousePress())
@@ -51,22 +52,29 @@ class eventListener:
 
 
     def on_key_press(self, key):
+      
         if key == Key.f12:
             print("F12 pressed. Stopping listeners")
-            self.running = False
             self.listener.stop()
             self.keyboard_listener.stop()
-            return False  # This stops the keyboard listener
+            return False
 
         last_start_time = self.listAction.tail.data.start_time
         _delay = datetime.now() - last_start_time
         self.listAction.append(Delay(_delay))
         self.listAction.append(KeyboardPress(key))
         
+    
+    def on_scroll(self, x, y, dx, dy):
+        last_start_time = self.listAction.tail.data.start_time
+        _delay = datetime.now() - last_start_time
+        self.listAction.append(Delay(_delay))
+        self.listAction.append(MouseScroll(x, y))
         
     
 
-    def on_release(key):
+    def on_release(self, key):
+        print(key)
         last_start_time = self.listAction.tail.data.start_time
         _delay = datetime.now() - last_start_time
         self.listAction.append(Delay(_delay))
@@ -80,8 +88,6 @@ class eventListener:
         self.listAction.append(Delay(_delay))
         self.listAction.append(MouseMove(x, y))
 
-    def on_scroll(self, x, y, dx, dy):
-        print(f"Mouse scrolled at ({x}, {y}) with delta ({dx}, {dy})")
 
     def after_listener_stops(self):
         self.listAction.traverse()

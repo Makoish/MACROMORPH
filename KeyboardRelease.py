@@ -9,7 +9,7 @@ class KeyboardRelease(Action):
         self.start_time = datetime.now()
         self.key = key
     def Perform(self):
-        self.keyboard.release(key)
+        self.keyboard.release(self.key)
         
 
 
