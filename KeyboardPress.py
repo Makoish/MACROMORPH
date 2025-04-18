@@ -5,10 +5,11 @@ from KeyboardControllerSingleton import KeyboardControllerSingleton
 
 class KeyboardPress(Action):
     def __init__(self, key):
-        self.keyboard = KeyboardControllerSingleton().get_controller()
+        
         self.start_time = datetime.now()
         self.key = key
     def Perform(self):
+        self.keyboard = KeyboardControllerSingleton().get_controller()
         self.keyboard.press(self.key)
         
 

@@ -1,5 +1,7 @@
 from Node import Node
-import time
+import pickle
+from Delay import Delay
+import threading
 
 class ListAction:
     def __init__(self):
@@ -14,17 +16,29 @@ class ListAction:
             self.tail.next = new_node
             self.tail = new_node
 
-    def traverse(self):
+    def load_from_pickel_file(self, file_path):
+        with open(file_path, 'rb') as f:
+            loaded_list = pickle.load(f)
+        
+        for act in loaded_list:
+            self.append(act)
+
+        
+
+    def traverse(self, delay):
         curr = self.head
         while curr:
-            print(curr.data)
+            if isinstance(curr.data, Delay) and not delay:
+                curr = curr.next
+                continue
+
             curr.data.Perform()
             curr = curr.next
+            
 
-    def __str__(self):
-        count = 0
-        curr = self.head
-        while curr:
-            count = count + 1
-            curr = curr.next
-        return str(count)
+
+
+    @staticmethod
+    def load(filename):
+        with open(filename, 'rb') as f:
+            return pickle.load(f)

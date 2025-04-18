@@ -19,6 +19,6 @@ class MouseMove(Action, Mouse):
         self.mouse.position = (self.x, self.y)
 
     def __str__(self):
-        return f"Mouse moved to pos {self.x}, {self.y}"
+        return f"MouseMove {self.x}, {self.y}"
         
         
