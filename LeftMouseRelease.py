@@ -1,10 +1,9 @@
 from Action import Action
 from pynput.mouse import Button
-from Mouse import Mouse
 from datetime import datetime
 from ControllerSingleton import ControllerSingleton
 
-class LeftMouseRelease(Action, Mouse):
+class LeftMouseRelease(Action):
     def __init__(self):
         self.start_time = datetime.now()
 
