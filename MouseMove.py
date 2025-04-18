@@ -1,10 +1,9 @@
 from Action import Action
 from pynput.mouse import Button
-from Mouse import Mouse
 from ControllerSingleton import ControllerSingleton
 from datetime import datetime
 
-class MouseMove(Action, Mouse):
+class MouseMove(Action):
     def __init__(self, x, y):
         self.x = x
         self.y = y
