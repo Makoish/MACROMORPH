@@ -6,6 +6,7 @@ import threading
 class ListAction:
     def __init__(self):
         self.head = None
+        self.play = False
         self.tail = None
     def append(self, data):
         new_node = Node(data)
@@ -27,7 +28,10 @@ class ListAction:
 
     def traverse(self, delay):
         curr = self.head
+        self.play = True
         while curr:
+            if not self.play:
+                return
             if isinstance(curr.data, Delay) and not delay:
                 curr = curr.next
                 continue
@@ -37,8 +41,7 @@ class ListAction:
             
 
 
+    def stop(self):
+        self.play = False
 
-    @staticmethod
-    def load(filename):
-        with open(filename, 'rb') as f:
-            return pickle.load(f)
+   

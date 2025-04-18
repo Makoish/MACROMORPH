@@ -15,6 +15,7 @@ from MouseMove import MouseMove
 from ControllerSingleton import ControllerSingleton
 from MouseScroll import MouseScroll
 import ctypes
+import threading
 from datetime import datetime
 from pynput.keyboard import Listener as KeyboardListener, Key
 from PIL import Image, ImageTk
@@ -27,9 +28,12 @@ class MacroRecorderApp:
     def __init__(self, root):
         self.root = root
         root.protocol("WM_DELETE_WINDOW", self.on_closing)
-        self.delay_var = tk.BooleanVar()
-        self.root.title("MACRO MORPH")
+        self.delay_var = tk.BooleanVar(value=True)
+        self.root.title("MACROMORPH")
         self.root.geometry("800x400")
+        
+        self.instruction_label = tk.Label(self.root, text="If you want to stop the playback, press ESC", font=("Arial", 40), fg="red")
+        self.list_thread = None
 
         self.record_img = ImageTk.PhotoImage(Image.open("images/record.png").resize((60, 60)))
         self.stop_img = ImageTk.PhotoImage(Image.open("images/stop.png").resize((60, 60)))
@@ -114,7 +118,9 @@ class MacroRecorderApp:
             
 
     def on_stop(self):
-        print("Recording stopped")
+        self.listAction.stop()
+        if self.list_thread:
+            self.list_thread.join()
         self.recording = False
         
 
@@ -123,9 +129,14 @@ class MacroRecorderApp:
         _head = self.listAction.head
        
         while _head:
-            print(type(_head))
             if isinstance(_head.data, LeftMousePress):
                 self.tree.insert("", tk.END, values=("Mouse left click", f"({_head.data.x}, {_head.data.y})"))
+
+            if isinstance(_head.data, RightMousePress):
+                self.tree.insert("", tk.END, values=("Mouse left click", f"({_head.data.x}, {_head.data.y})"))
+
+            if isinstance(_head.data, KeyboardPress):
+                self.tree.insert("", tk.END, values=("Key press", f"({_head.data.key})"))
 
             _head = _head.next
             
@@ -181,10 +192,11 @@ class MacroRecorderApp:
             self.tree.delete(row)
 
     def on_play(self):
-        if not self.recording:
-            print("Playing back the recorded Macro")
-            self.listAction.traverse(self.delay_var.get())
-            print("finished")
+        self.listAction.stop()
+        print("Playing back the recorded Macro")
+        self.listAction.traverse(self.delay_var.get())
+        self.instruction_label.pack(pady=(0, 40))
+        print("finished")
 
 
 
@@ -220,26 +232,31 @@ class MacroRecorderApp:
 
     def on_key_press(self, key):
         if key == Key.esc:
-            self.listener.stop()
-            self.keyboard_listener.stop()
-            return False
+            self.listAction.stop()
+            if self.list_thread:
+                self.list_thread.join()
         if not self.recording:
             if key == Key.f2: #start
                 print("Recording Started")
+                self.tree.insert("", "end", values=("Record", "Started"))
                 self.listAction = ListAction()
                 start_pos = self.controller.position
                 self.listAction.append(MouseMove(start_pos[0], start_pos[1]))
                 self.listAction.append(MouseScroll(start_pos[0], start_pos[1]))
                 self.recording = True
             if key == Key.f10: #play
-                print("Playing back the recorded Macro")
-                self.listAction.traverse(self.delay_var.get())
-                print("finished")
+                self.instruction_label.pack()
+                self.listAction.stop()
+                if self.list_thread:
+                    self.list_thread = None
+                self.list_thread = threading.Thread(target=self.listAction.traverse, args=[self.delay_var.get()])
+                self.list_thread.start()
+                print("finished the playback")
+                self.tree.insert("", "end", values=("Record", "Ended"))
 
            
         else:
             if key == Key.f12: #end
-                print("Recording Stopped")
                 self.recording = False
            
             else:
